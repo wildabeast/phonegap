@@ -90,38 +90,9 @@ void BrowserView::initialize()
     
     QDir www = QDir::current();
     www.cd("www");
-    /*
-    //QString html = www.absolutePath();
-	www.setSorting(QDir::DirsFirst | QDir::Name);
-    QString html("");
-    QStringList wwwList = www.entryList(QDir::AllEntries, QDir::DirsFirst);
-    foreach (QString filename, wwwList) {
-		html += filename + "\n\r";
-    }
-    html += www.filePath("index.html") + "\n\r";
-    
-    QFile file("www/index.html");
-    if(file.open(QIODevice::ReadOnly)) {
-    	html += "opened file";
-    	html = file.readAll();
-        file.close();  
-    } else {
-		html += "could not open file";
-    }
 
-    m_webView->setHtml(html);
-    m_webView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    m_webView->setFocus();
-    */
-    
-    //try to load a local file into the m_webview
-    //m_webView->guessUrlFromString(www.filePath("index.html"));
-    //m_webView->load(m_webView->guessUrlFromString(www.filePath("index.html")));
     m_webView->load(QUrl::fromUserInput(www.filePath("index.html")));
-    //this->debug(m_webView->url().toString());
     m_titleBar->setTitle(m_webView->url().toString());
-    //don't setdefaultiap, phonegap baby
-    //return;
     
 #ifdef Q_OS_SYMBIAN
     QTimer::singleShot(0, this, SLOT(setDefaultIap()));
@@ -132,14 +103,12 @@ void BrowserView::start()
 {
     m_progress = 0;
     updateTitleBar();
-    //m_titleBar->setText(m_webView->url().toString());
 }
 
 void BrowserView::setProgress(int percent)
 {
     m_progress = percent;
     updateTitleBar();
-    //m_titleBar->setText(QString("Loading %1%").arg(percent));
 }
 
 void BrowserView::updateTitleBar()
@@ -157,7 +126,7 @@ void BrowserView::finish(bool ok)
 
     // TODO: handle error
     if (!ok) {
-        //m_titleBar->setText("Loading failed.");
+        
     }
 }
 

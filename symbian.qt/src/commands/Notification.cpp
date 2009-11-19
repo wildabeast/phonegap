@@ -2,7 +2,7 @@
  * Notification.cpp
  *
  *  Created on: Nov 16, 2009
- *      Author: nitobi-test
+ *      Author: ryan
  */
 
 #include "Notification.h"

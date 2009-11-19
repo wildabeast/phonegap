@@ -63,60 +63,15 @@ void BrowserWindow::initialize()
     m_browserView->resize(size());
     m_browserView->move(0, 0);
 
-    connect(m_browserView, SIGNAL(menuButtonClicked()), SLOT(showHomeView()));
-
     m_browserView->setVisible(false);
     slide(0);
 
     connect(m_timeLine, SIGNAL(frameChanged(int)), SLOT(slide(int)));
 }
 
-
-// from Demo Browser
-QUrl guessUrlFromString(const QString &string)
-{
-    QString urlStr = string.trimmed();
-    QRegExp test(QLatin1String("^[a-zA-Z]+\\:.*"));
-
-    // Check if it looks like a qualified URL. Try parsing it and see.
-    bool hasSchema = test.exactMatch(urlStr);
-    if (hasSchema) {
-        QUrl url = QUrl::fromEncoded(urlStr.toUtf8(), QUrl::TolerantMode);
-        if (url.isValid())
-            return url;
-    }
-
-    // Might be a file.
-    if (QFile::exists(urlStr)) {
-        QFileInfo info(urlStr);
-        return QUrl::fromLocalFile(info.absoluteFilePath());
-    }
-
-    // Might be a shorturl - try to detect the schema.
-    if (!hasSchema) {
-        int dotIndex = urlStr.indexOf(QLatin1Char('.'));
-        if (dotIndex != -1) {
-            QString prefix = urlStr.left(dotIndex).toLower();
-            QString schema = (prefix == QString("ftp")) ? prefix.toLatin1() : QString("http");
-            QString location = schema + "://" + urlStr;
-            QUrl url = QUrl::fromEncoded(location.toUtf8(), QUrl::TolerantMode);
-            if (url.isValid())
-                return url;
-        }
-    }
-
-    // Fall back to QUrl's own tolerant parser.
-    QUrl url = QUrl::fromEncoded(string.toUtf8(), QUrl::TolerantMode);
-
-    // finally for cases where the user just types in a hostname add http
-    if (url.scheme().isEmpty())
-        url = QUrl::fromEncoded("http://" + string.toUtf8(), QUrl::TolerantMode);
-    return url;
-}
-
 void BrowserWindow::gotoAddress(const QString &address)
 {
-    m_browserView->navigate(guessUrlFromString(address));
+    m_browserView->navigate(QUrl::fromUserInput(address));
     showBrowserView();
 }
 
