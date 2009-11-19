@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
 
     QApplication app(argc, argv);
 
-    app.setApplicationName("Anomaly");
+    app.setApplicationName("PhoneGap");
     app.setApplicationVersion("0.0.0");
 
     BrowserWindow window;

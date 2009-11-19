@@ -1,5 +1,5 @@
-#ifndef TESTOBJECT_H
-#define TESTOBJECT_H
+#ifndef COMMANDMANAGER_H
+#define COMMANDMANAGER_H
 
 #include <qobject.h>
 
@@ -19,6 +19,9 @@ public:
     void setWebView( QWebView *view, BrowserView *bview  );
     DebugConsole *m_console;
     Notification *m_notification;
+    
+   // Q_PROPERTY( Notification notification READ notification )
+    //Notification notification() { return *m_notification; };
 
 public slots:
     //void debug( const QString &param );
@@ -31,5 +34,5 @@ private:
     QWebFrame *frame;
     BrowserView *m_bview;
 };
-#endif // TESTOBJECT_H
+#endif // COMMANDMANAGER_H
 

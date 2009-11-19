@@ -6,11 +6,10 @@ var current_menu = null;
 
 function init() {
 	current_menu = document.getElementById("mnu-cont");
-	alert(GapNotification);
-	alert(GapNotification.vibrate);
-	alert(navigator.notification);
-	alert(navigator.notification.vibrate);
 	navigator.debugconsole.log("shit yeah its working");
+	alert(SymbianGap);
+	alert(SymbianGap.notification);
+	SymbianGap.notification.vibrate();
 }
 
 var changeView = function (e) {

@@ -25,11 +25,11 @@ void CommandManager::attachObjects()
 {
     frame->addToJavaScriptWindowObject( "GapDebugConsole", m_console );
     frame->addToJavaScriptWindowObject( "GapNotification", m_notification );
+    
+    //TODO: would prefer to just add one object, like this, but we cannot add objects as properties
+    //(see header file CommandManager.h)
+    //this may cause a problem when we want returned objects to be available as js properties like
+    //geolocation.lastPosition
+    //frame->addToJavaScriptWindowObject( "SymbianGap", this );
+    //frame->addToJavaScriptWindowObject( "SymbianGap.notification", m_notification);
 }
-/*
-void CommandManager::debug( const QString &param )
-{
-    qDebug() << param;
-    m_bview->debug(param);
-}
-*/

@@ -21,11 +21,8 @@ class DebugConsole : public QObject
 public:
 	DebugConsole( QWebView *view, BrowserView *bview  );
 
-    //void setWebView( QWebView *view, BrowserView *bview  );
-
 public slots:
     void log( const QString &param );
-    //void attachObject();
 
 private slots:
    

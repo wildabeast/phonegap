@@ -2,7 +2,7 @@
  * Notification.h
  *
  *  Created on: Nov 16, 2009
- *      Author: nitobi-test
+ *      Author: ryan
  */
 
 #ifndef NOTIFICATION_H_
