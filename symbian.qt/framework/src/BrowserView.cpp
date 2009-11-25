@@ -95,7 +95,7 @@ void BrowserView::initialize()
     m_titleBar->setTitle(m_webView->url().toString());
     
 #ifdef Q_OS_SYMBIAN
-    QTimer::singleShot(0, this, SLOT(setDefaultIap()));
+    //QTimer::singleShot(0, this, SLOT(setDefaultIap()));
 #endif
 }
 

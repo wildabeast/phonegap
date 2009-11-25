@@ -7,9 +7,6 @@ var current_menu = null;
 function init() {
 	current_menu = document.getElementById("mnu-cont");
 	navigator.debugconsole.log("shit yeah its working");
-	alert(SymbianGap);
-	alert(SymbianGap.notification);
-	SymbianGap.notification.vibrate();
 }
 
 var changeView = function (e) {
@@ -27,7 +24,7 @@ function getLocation() {
 	var options = new Object();
 	options.frequency = 8000;
 	timeout = setInterval("animate()", 500);
-	navigator.geolocation.getCurrentPosition(updateLocation, function(){
+	navigator.geolocation.watchPosition(updateLocation, function(){
 	}, options);
 }
 
@@ -68,6 +65,7 @@ function updateLocation(position) {
 	document.getElementById('altitude').innerHTML = pt.altitude;
 	document.getElementById('heading').innerHTML = pt.heading;
 	document.getElementById('speed').innerHTML = pt.speed;
+	document.getElementById('timestamp').innerHTML = position.timestamp.getHours() + ":" + position.timestamp.getMinutes() + ":" + position.timestamp.getSeconds();
 }
 
 function updateAcceleration(accel) {

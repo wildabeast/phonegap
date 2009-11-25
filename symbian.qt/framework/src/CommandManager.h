@@ -6,9 +6,11 @@
 #include "BrowserView.h"
 #include "DebugConsole.h"
 #include "Notification.h"
+#include "Geolocation.h"
 
 class QWebView;
 class QWebFrame;
+class Geolocation;
 
 class CommandManager : public QObject
 {
@@ -19,20 +21,19 @@ public:
     void setWebView( QWebView *view, BrowserView *bview  );
     DebugConsole *m_console;
     Notification *m_notification;
+    Geolocation *m_geolocation;
     
    // Q_PROPERTY( Notification notification READ notification )
     //Notification notification() { return *m_notification; };
+    
+private:
+    QWebFrame *frame;
+    BrowserView *m_bview;
 
 public slots:
     //void debug( const QString &param );
 	void attachObjects();
-
-private slots:
-    
-
-private:
-    QWebFrame *frame;
-    BrowserView *m_bview;
+	void evaluateJS(QString js);
 };
 #endif // COMMANDMANAGER_H
 
