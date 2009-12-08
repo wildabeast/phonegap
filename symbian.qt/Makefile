@@ -17,7 +17,7 @@ ECHO = echo
 ECHO_N = echo -n
 JAVA = java
 
-all :: symbian.wrt
+all :: symbian.qt
 
 clean :: clean_libs
 
@@ -26,10 +26,10 @@ clean_libs:
 	
 symbian.qt: lib/phonegap.js
 
-lib/phonegap.js: javascripts/debugconsole.js javascripts/geolocation.js javascripts/notification.js javascripts/position.js
+lib/phonegap.js: js/debugconsole.js js/geolocation.js js/notification.js js/position.js
 	$(MKPATH) lib
 	$(RM_F) $@
-	$(CAT) javascripts/debugconsole.js >> $@
-	$(CAT) javascripts/geolocation.js >> $@
-	$(CAT) javascripts/notification.js >> $@
-	$(CAT) javascripts/position.js >> $@
+	$(CAT) js/debugconsole.js >> $@
+	$(CAT) js/geolocation.js >> $@
+	$(CAT) js/notification.js >> $@
+	$(CAT) js/position.js >> $@
