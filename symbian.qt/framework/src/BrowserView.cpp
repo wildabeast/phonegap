@@ -48,10 +48,11 @@
 #include "TitleBar.h"
 #include "CommandManager.h"
 #include "DebugConsole.h"
+#include "xqaccesspointmanager.h"
 
-#if defined (Q_OS_SYMBIAN)
-#include "sym_iap_util.h"
-#endif
+//#if defined (Q_OS_SYMBIAN)
+//#include "sym_iap_util.h"
+//#endif
 
 BrowserView::BrowserView(QWidget *parent)
     : QWidget(parent)
@@ -93,9 +94,9 @@ void BrowserView::initialize()
 
     m_webView->load(QUrl::fromUserInput(www.filePath("index.html")));
     m_titleBar->setTitle(m_webView->url().toString());
-    
+    m_webView->page()->settings()->setAttribute(QWebSettings::LocalContentCanAccessRemoteUrls, true);
 #ifdef Q_OS_SYMBIAN
-    //QTimer::singleShot(0, this, SLOT(setDefaultIap()));
+    QTimer::singleShot(0, this, SLOT(setDefaultIap()));
 #endif
 }
 
@@ -164,8 +165,48 @@ void BrowserView::resizeEvent(QResizeEvent *event)
 #ifdef Q_OS_SYMBIAN
 void BrowserView::setDefaultIap()
 {
-    qt_SetDefaultIap();
+	//currently the best behaviour is if none of this happens, and the OS manages connections.
+	//but its not ideal ... it will ask repeatedly if set to "ask always", even though
+	//this setting does not ask repeatedly for other apps, and it is the default setting.
+	return;
+	//the code below is the behaviour we "want" but it actually simply breaks connectivity
+
+    //qt_SetDefaultIap();
     //m_webView->load(QUrl("http://news.bbc.co.uk/text_only.stm"));
+
+	// Create an Access Point Manager object
+	XQAccessPointManager* apManager = new XQAccessPointManager(this);
+	if (apManager->isSetDefaultAccessPointSupported())
+		this->debug("default ap supported");
+	else
+		this->debug("default ap not supported");
+	
+	this->debug("preferred ap: " + apManager->preferredAccessPoint().name());
+	this->debug("default ap: " + apManager->defaultAccessPoint().name());
+	this->debug("system ap: " + apManager->systemAccessPoint().name());
+	
+	// Get a list of available access points
+	QList <XQAccessPoint> accessPoints = apManager->availableAccessPoints();
+	this->debug(QString::number(accessPoints.length()) + " access points");
+	for (int i = 0; i < accessPoints.length(); i++)
+		this->debug(accessPoints[i].name());
+		
+	// Get the preferred access point
+	// this is not matching to the preferred AP of "Internet (Fido GPRS)" as set on the phone. wtf.
+	XQAccessPoint ap = apManager->preferredAccessPoint();
+
+	// Use the preferred access point if there is one
+	if (!ap.isNull())
+	{
+		this->debug("preferred ap: " + ap.name());
+	    apManager->setDefaultAccessPoint(ap);
+	} else {
+		// what should happen is here the prompt is given, we get the user input and set the default
+		// or if the os could prompt and set that would be acceptable
+		this->debug("no preffered ap available");
+		apManager->setDefaultAccessPoint(accessPoints[0]);
+	}
+
 }
 #endif
 

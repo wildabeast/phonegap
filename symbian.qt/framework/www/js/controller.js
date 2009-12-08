@@ -6,7 +6,7 @@ var current_menu = null;
 
 function init() {
 	current_menu = document.getElementById("mnu-cont");
-	navigator.debugconsole.log("shit yeah its working");
+	debug.log("shit yeah its still working");
 }
 
 var changeView = function (e) {
@@ -88,8 +88,12 @@ function displayContacts() {
 function vibrate() {
 	try {
 		navigator.notification.vibrate(2000);
+		var xhr = new XMLHttpRequest();
+		xhr.onreadystatechange = function() { debug.log(xhr.readyState + "," + xhr.status + ": " + xhr.responseText); };
+		xhr.open("GET", "http://tcktcktck.org/files/tck_pledge_count.txt", true);
+		xhr.send(null);
 	} catch (ex) {
-		alert(ex.name + ": " + ex.message);
+		debug.log(ex.name + ": " + ex.message);
 	}
 }
 

@@ -19,7 +19,7 @@ DebugConsole.prototype.log = function (output) {
 	GapDebugConsole.log(output);
 }
 
-if (typeof navigator.debugconsole == "undefined") navigator.debugconsole = new DebugConsole();
+if (typeof debug == "undefined") debug = new DebugConsole();
 
 /**
  * This class provides access to device GPS data.
@@ -116,7 +116,6 @@ Geolocation.prototype.start = function(options) {
 Geolocation.prototype.stop = function() {
 	GapGeolocation.stop();
 }
-
 
 if (typeof navigator.geolocation == "undefined") navigator.geolocation = new Geolocation();
 

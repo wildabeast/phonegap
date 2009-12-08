@@ -21,7 +21,7 @@ void Geolocation::start(int interval) {
 		this, SLOT(handleLocationChanged(double, double, double, float)));
 	
 	// One-off request for location
-	location->startUpdates();
+	location->startUpdates(interval);
 
 }
 
@@ -31,7 +31,7 @@ void Geolocation::handleLocationChanged(double latitude, double longitude, doubl
 			"longitude: " + QString::number(longitude) + ", " +
 			"altitude: " + QString::number(altitude) + ", " +
 			"speed: " + QString::number(speed) + "}, " +
-			"timestamp: new Date() };");
+			"timestamp: new Date().getTime() };");
 }
 
 void Geolocation::stop() {

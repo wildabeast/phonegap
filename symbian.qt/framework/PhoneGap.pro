@@ -12,8 +12,7 @@ HEADERS += src/commands/Geolocation.h \
     src/CommandManager.h \
     src/TitleBar.h \
     src/commands/DebugConsole.h \
-    src/commands/Notification.h \
-    src/sym_iap_util.h
+    src/commands/Notification.h 
 SOURCES += src/commands/Geolocation.cpp \
     src/BrowserView.cpp \
     src/BrowserWindow.cpp \
@@ -28,12 +27,11 @@ RESOURCES +=
 symbian { 
     TARGET.UID3 = 0xE666C00E
     ICON = icon.svg
-    HEADERS += src/sym_iap_util.h
     LIBS += -lesock \
         -linsock \
         -lconnmon \
         -lhwrmvibraclient
-    TARGET.CAPABILITY = NetworkServices Location
+    TARGET.CAPABILITY = NetworkServices Location ReadUserData
     TARGET.EPOCHEAPSIZE = 0x20000 \
         0x2000000
     htmlfiles.sources = ./www
@@ -43,3 +41,4 @@ symbian {
 
 include(src/mobility/vibra/vibra.pri)
 include(src/mobility/location/location.pri)
+include(src/mobility/accesspointmanager/accesspointmanager.pri)
