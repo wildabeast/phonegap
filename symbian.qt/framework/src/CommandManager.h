@@ -7,21 +7,26 @@
 #include "DebugConsole.h"
 #include "Notification.h"
 #include "Geolocation.h"
+#include "Orientation.h"
 
+// Forward declaration
 class QWebView;
 class QWebFrame;
 class Geolocation;
+class Orientation;
 
 class CommandManager : public QObject
 {
     Q_OBJECT
 public:
 	CommandManager( QObject *parent );
-
     void setWebView( QWebView *view, BrowserView *bview  );
+    void debug(QString text);
+    
     DebugConsole *m_console;
     Notification *m_notification;
     Geolocation *m_geolocation;
+    Orientation *m_orientation;
     
    // Q_PROPERTY( Notification notification READ notification )
     //Notification notification() { return *m_notification; };

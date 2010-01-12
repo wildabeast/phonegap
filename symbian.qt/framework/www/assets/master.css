@@ -1,52 +1,55 @@
 body {
-	width: 				360px;
-	height: 			620px;
+	margin:				0px;
+	background-color:	#222222;
+}
+
+.body {
+	width: 				100%;
 	font-family: 		Helvetica;
 	margin:				0px;
 	font-size:			16pt;
+	background-color:	#222222;
+	color:				#EEEEEE;
 }
 
 .header {
 	width:				100%;
 	text-align:			center;
-	font-size:			27pt;
-	padding:			20px 0px;
+	font-size:			1.7em;
+	padding:			5% 0px;
 }
 
-.menu {
-	width:				100%;
-	height:				120px;
-	font-size:			18pt;
-}
 .menu-item {
-	width:				118px;
-	height:				25px;
-	text-align:			center;
-	float:				left;
-	padding:			5px 0px;
-	background-color:	#0F659C;
-	border:				1px solid white;
+	width:				100%;
+	height:				40px;
+	display:			block;
+	font-size:			1.5em;
+	padding:			10px 0px;
+	background:			url(item_bg.png) repeat-x;
 }
+.menu-item span {
+	margin:				0px 10px;
+}
+
+p {
+	margin:				0px;
+	padding:			10px;
+}
+
 .selected {
 	background-color:	#78B2D1;
 }
 
 .view {
-	padding-top:		20px;
+	height:				0px;
+	overflow:			hidden;
+	background:			url(view_bg.png) repeat-x;
+	position:			relative;
+	display:			none;
 }
 
-.list {
-	width:				100%;
-}
-
-.list-item {
-	padding:			8px 2px;
-}
-
-.list-item-small {
-	font-size:			15pt;
-	padding-top:		3px;
-	float:				right;
+ul {
+	list-style-type:	none;
 }
 
 .contacts {
@@ -61,6 +64,38 @@ body {
 	width:				35px;
 }
 
-.img_preview {
-	width:				340px;
+.preview {
+	width:				250px;
+	margin:				10px;
+}
+
+textarea, input {
+	width:				90%;
+}
+
+.button {
+	background:			url(button.png) no-repeat;
+	width:				258px;
+	height:				48px;
+	text-align:			center;
+	padding:			10px 0px;
+	margin:				0px auto;
+	font-size:			1.3em;
+}
+
+#spacer {
+	height:				400px;
+	width:				100%;
+}
+
+.button-small {
+	background:			url(button_sm.png) no-repeat;
+	position:			absolute;
+	width:				100px;
+	height:				38px;
+	text-align:			center;
+	padding:			8px 0px;
+	font-size:			1.1em;
+	left:				10px;
+	bottom:				10px;
 }

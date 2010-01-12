@@ -49,6 +49,8 @@
 #include "CommandManager.h"
 #include "DebugConsole.h"
 #include "xqaccesspointmanager.h"
+#include <qnetworkconfigmanager.h>
+
 
 //#if defined (Q_OS_SYMBIAN)
 //#include "sym_iap_util.h"
@@ -165,6 +167,7 @@ void BrowserView::resizeEvent(QResizeEvent *event)
 #ifdef Q_OS_SYMBIAN
 void BrowserView::setDefaultIap()
 {
+
 	//currently the best behaviour is if none of this happens, and the OS manages connections.
 	//but its not ideal ... it will ask repeatedly if set to "ask always", even though
 	//this setting does not ask repeatedly for other apps, and it is the default setting.

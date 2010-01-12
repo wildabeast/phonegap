@@ -1,59 +1,64 @@
 var timeout = null;
 var displayState = 0;
 var accel_watch_id;
-var CURRENT_VIEW = "CONTACTS";
+var current_view = null;
 var current_menu = null;
+var myAudio = null;
 
-function init() {
-	current_menu = document.getElementById("mnu-cont");
-	debug.log("shit yeah its still working");
+if (typeof $ == 'undefined') {
+	$ = function (el) {
+		if (typeof el == 'string')
+			return document.getElementById(el);
+		else
+			return el;
+	}
 }
 
 var changeView = function (e) {
-	if (current_menu)
-		current_menu.className = "menu-item";
-	current_menu = e.target;
-	e.target.className = "menu-item selected";
-	var id = e.target.innerHTML;
-	document.getElementById(CURRENT_VIEW).style.display = "none";
-	document.getElementById(id).style.display = "block";
-	CURRENT_VIEW = id;
+	try {
+		// Hide previous view if its visible
+		if (current_view) {
+			emile(current_view, 'height:0px', {duration: 800});
+		}
+		var menuId = e.currentTarget.id;
+		
+		// If we've rehit the visible view, we're just hiding so return
+		if (menuId == current_menu) {
+			current_view = current_menu = null;
+			return;
+		}
+		var menu = $(menuId);
+		
+		// The next element after the menu item is the view
+		var nextSib = menu.nextSibling;
+		while (nextSib.nodeType != 1) {
+			nextSib = nextSib.nextSibling;
+		}
+		var viewId = nextSib.id;
+		
+		$("spacer").style.display = "block";
+		window.location = "#" + menuId;
+		$(viewId).style.display = "block";
+		emile(viewId, 'height:400px', {duration: 800});
+		setTimeout('$("spacer").style.display = "none";', 800);
+		current_menu = menuId;
+		current_view = viewId;
+	} catch (ex) { debug.log(ex.name + ": " + ex.message) }
+}
+
+function back() {
+	if (current_view) {
+		emile(current_view, 'height:0px', {duration: 800});
+	}
+	current_view = null;
 }
 
 function getLocation() {
 	var options = new Object();
-	options.frequency = 8000;
+	options.frequency = 5000;
 	timeout = setInterval("animate()", 500);
 	navigator.geolocation.watchPosition(updateLocation, function(){
 	}, options);
-}
-
-function watchAccel() {
-	var options = new Object();
-	options.frequency = 1000;
-	accel_watch_id = navigator.accelerometer.watchAcceleration(updateAcceleration, function(ex){
-		navigator.accelerometer.clearWatch(accel_watch_id);
-		alert("accel fail (" + ex.name + ": " + ex.message + ")");
-	}, options);
-}
-
-function watchOrientation() {
-	var options = new Object();
-	options.frequency = 1000;
-	navigator.orientation.watchOrientation(updateOrientation, null, options);
-}
-
-function getContacts() {
-	navigator.ContactManager.getAllContacts(displayContacts, function(){
-		alert('getallcontacts fail');
-	}, new Object());
-}
-
-function checkStorage() {
-	var store = navigator.storage.getItem("store_test");
-	if (store) {
-		document.getElementById("storage_output").innerHTML = "You stored this: " + store;
-	}
 }
 
 function updateLocation(position) {
@@ -65,35 +70,78 @@ function updateLocation(position) {
 	document.getElementById('altitude').innerHTML = pt.altitude;
 	document.getElementById('heading').innerHTML = pt.heading;
 	document.getElementById('speed').innerHTML = pt.speed;
-	document.getElementById('timestamp').innerHTML = position.timestamp.getHours() + ":" + position.timestamp.getMinutes() + ":" + position.timestamp.getSeconds();
+	var dt = new Date();
+	dt.setTime(position.timestamp);
+	document.getElementById('timestamp').innerHTML = dt.getHours() + ":" + 
+		dt.getMinutes() + ":" + dt.getSeconds();
+}
+
+function watchAccel() {
+	var options = new Object();
+	options.frequency = 1000;
+	accel_watch_id = navigator.accelerometer.watchAcceleration(updateAcceleration, function(ex){
+		navigator.accelerometer.clearWatch(accel_watch_id);
+		alert("accel fail (" + ex.name + ": " + ex.message + ")");
+	}, options);
 }
 
 function updateAcceleration(accel) {
-	document.getElementById('accel_x').innerHTML = accel.x;
-	document.getElementById('accel_y').innerHTML = accel.y;
-	document.getElementById('accel_z').innerHTML = accel.z;
+	document.getElementById('accel_x').innerHTML = ("" + accel.x).substring(0,8);
+	document.getElementById('accel_y').innerHTML = ("" + accel.y).substring(0,8);
+	document.getElementById('accel_z').innerHTML = ("" + accel.z).substring(0,8);
 }
 
-function displayContacts() {
-	var contacts = navigator.ContactManager.contacts;
+function watchOrientation() {
+	var options = new Object();
+	options.frequency = 1000;
+	navigator.orientation.watchOrientation(updateOrientation, function (ex) { debug.log(ex.name + ": " + ex.message) }, options);
+}
+
+function updateOrientation(orientation) {
+	var output = "";
+	switch (orientation) {
+		case DisplayOrientation.PORTRAIT: output = "portrait"; break;
+		case DisplayOrientation.REVERSE_PORTRAIT: output = "reverse portrait"; break;
+		case DisplayOrientation.LANDSCAPE_LEFT_UP: output = "landscape left up"; break;
+		case DisplayOrientation.LANDSCAPE_RIGHT_UP: output = "landscape right up"; break;
+		case DisplayOrientation.FACE_UP: output = "face up"; break;
+		case DisplayOrientation.FACE_DOWN: output = "face down"; break;
+	}
+	document.getElementById("orientation").innerHTML = output;
+}
+
+function getContacts() {
+	var filter = document.getElementById("contact-filter").value;
+	navigator.contacts.find({ name: filter }, displayContacts, function(error){
+		document.getElementById('contacts_list').innerHTML = "<p>" + error.message + "</p>";
+	}, { limit:200, page:1 });
+}
+
+function displayContacts(contacts) {
 	var output = "";
 	for (var i=0; i<contacts.length; i++) {
-		output += 	"<div class='list-item'>" + contacts[i].firstName + " " + contacts[i].lastName +
-					"<span class='list-item-small'> Phone: " + contacts[i].phones["Mobile"] +
+		var phone = getNonEmptyNumber(contacts[i]);
+		output += 	"<div class='list-item'>" + contacts[i].name.formatted +
+					"<span class='list-item-small'> Phone(" + phone.type + "): " + phone.number +
 					"</div>";
 	}
-	document.getElementById('contacts').innerHTML = output;
+	document.getElementById('contacts_list').innerHTML = output;
 }
 
-function vibrate() {
-	try {
-		navigator.notification.vibrate(2000);
-		var xhr = new XMLHttpRequest();
-		xhr.onreadystatechange = function() { debug.log(xhr.readyState + "," + xhr.status + ": " + xhr.responseText); };
-		xhr.open("GET", "http://tcktcktck.org/files/tck_pledge_count.txt", true);
-		xhr.send(null);
-	} catch (ex) {
-		debug.log(ex.name + ": " + ex.message);
+function getNonEmptyNumber(contact) {
+	for (var i=0; i<contact.phones.length; i++) {
+		if (contact.phones[i].number != undefined && contact.phones[i].number != "")
+			return contact.phones[i];
+	}
+	return contact.phones[0];
+}
+
+function notify(type) {
+	switch (type) {
+		case 'vib1':navigator.notification.vibrate(2000,100); break;
+		case 'vib2':navigator.notification.vibrate(5000,10); break;
+		case 'alert':navigator.notification.alert("This is a custom message.", "Custom title", "Custom OK");break;
+		case 'beep':navigator.notification.beep();break;
 	}
 }
 
@@ -115,7 +163,6 @@ function animate() {
 			displayStatus('finding satellites');
 			displayState = 0;
 			break;
-			
 	}
 }
 
@@ -128,8 +175,11 @@ function displayStatus(status) {
 }
 
 function sendSMS() {
+	try{
 	var number = document.getElementById('sms_number').value;
-	navigator.sms.send(number, "I love scotch. scotch scotch scotch", smsSuccess, smsFailure);
+	var msg = document.getElementById('sms_message').value;
+	navigator.sms.send(number, msg, smsSuccess, smsFailure);
+} catch (ex) { debug.log(ex.name + ": " + ex.message); }
 }
 
 function smsSuccess() {
@@ -140,27 +190,52 @@ function smsFailure() {
 	document.getElementById("sms_status").innerHTML = "failed";
 }
 
+function call() {
+	var number = document.getElementById("phone_number").value;
+	if (isNaN(number))
+		navigator.notification.alert("", "Invalid Number", "OK");
+	else
+		navigator.telephony.send(number);
+}
+
 function takePicture() {
 	navigator.camera.getPicture(cameraSuccess, cameraFailure, null);
 }
 
 function cameraSuccess(imageUrls) {
 	//this is an array of all the photos taken while the camera app was open
-	document.getElementById('preview').innerHTML = "<img class=\"img_preview\" src=\"" + imageUrls[0] + "\" alt=\"\" />";
+	debug.log(imageUrls[0]);
+	document.getElementById("preview").innerHTML = "<img src='" + imageUrls[0]  + "' class='preview'/>";
 }
 
-function cameraFailure(error) {
-	alert("camera fail: " + error.name + " - " + error.message);
+function cameraFailure() {
+	document.getElementById("preview").innerHTML = "camera error";
 }
 
-function updateOrientation(orientation) {
-	document.getElementById("orientation").innerHTML = orientation;
+function soundCommand(cmd) {
+	try {
+	if (myAudio == null)
+		myAudio = new Audio("assets/beep.mp3");
+	if (cmd == "play") {
+		myAudio.play();
+	} else if (cmd == "pause") {
+		myAudio.pause();
+	} else if (cmd == "stop") {
+		myAudio.stop();
+	}
+} catch (ex) { debug.log(ex.name + ": " + ex.message) }
+}
+
+function checkStorage() {
+	var store = navigator.storage.getItem("store_test");
+	if (store) {
+		document.getElementById("storage_output").innerHTML = "You stored this: " + store;
+	}
 }
 
 function testStorage(mode) {
 	try {
 		if (mode == 'store') {
-
 			navigator.storage.setItem("store_test", document.getElementById("storage_string").value);
 		}
 		else {
@@ -169,4 +244,10 @@ function testStorage(mode) {
 	} catch (ex) {
 		alert(ex.name + ": " + ex.message);
 	}
+}
+
+function showMap() {
+	navigator.geolocation.getCurrentPosition( function(position) {
+		navigator.map.show(position);
+	}, function () { debug.log("mapping error"); })
 }
